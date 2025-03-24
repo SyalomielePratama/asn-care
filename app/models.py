@@ -1,0 +1,128 @@
+from django.db import models
+from django.utils import timezone
+from PIL import Image
+
+class Pegawai(models.Model):
+    id_pegawai = models.AutoField(primary_key=True) # ID baru untuk database
+    idtbPegawai = models.IntegerField(null=True, blank=True)
+    nipLama = models.CharField(max_length=255, null=True, blank=True)
+    nipBaru = models.CharField(max_length=255, null=True, blank=True)
+    namaPegawai = models.CharField(max_length=255, null=True, blank=True)
+    gelarDepan = models.CharField(max_length=255, null=True, blank=True)
+    gelarBelakang = models.CharField(max_length=255, null=True, blank=True)
+    tempatLahir = models.CharField(max_length=255, null=True, blank=True)
+    tanggalLahir = models.DateField(null=True, blank=True)
+    agama = models.CharField(max_length=255, null=True, blank=True)
+    jenisKelamin = models.CharField(max_length=255, null=True, blank=True)
+    email = models.EmailField(null=True, blank=True)
+    NIK = models.CharField(max_length=255, null=True, blank=True)
+    alamat = models.TextField(null=True, blank=True)
+    telepon = models.CharField(max_length=255, null=True, blank=True)
+    statusPernikahan = models.CharField(max_length=255, null=True, blank=True)
+    kedudukanHukum = models.CharField(max_length=255, null=True, blank=True)
+    jenisPegawai = models.CharField(max_length=255, null=True, blank=True)
+    nomorKarpeg = models.CharField(max_length=255, null=True, blank=True)
+    nomorNPWP = models.CharField(max_length=255, null=True, blank=True)
+    nomorKPE = models.CharField(max_length=255, null=True, blank=True)
+    fotoPegawai = models.ImageField(upload_to='foto_pegawai/', blank=True, null=True)
+    idelektronik = models.CharField(max_length=255, null=True, blank=True)
+    shift = models.CharField(max_length=255, null=True, blank=True)
+    skpd = models.CharField(max_length=255, null=True, blank=True)
+    flagStatus = models.IntegerField(null=True, blank=True)
+    link_file_apps_karpeg = models.ImageField(upload_to='karpeg/', blank=True, null=True)
+    format_karpeg = models.CharField(max_length=255, null=True, blank=True)
+    ukuran_karpeg = models.IntegerField(null=True, blank=True)
+    link_file_apps_npwp = models.ImageField(upload_to='npwp/', blank=True, null=True)
+    format_npwp = models.CharField(max_length=255, null=True, blank=True)
+    ukuran_npwp = models.IntegerField(null=True, blank=True)
+    link_file_apps_kpe = models.ImageField(upload_to='kpe/', blank=True, null=True)
+    format_kpe = models.CharField(max_length=255, null=True, blank=True)
+    ukuran_kpe = models.IntegerField(null=True, blank=True)
+    barcode_karpeg = models.CharField(max_length=255, null=True, blank=True)
+    barcode_npwp = models.CharField(max_length=255, null=True, blank=True)
+    barcode_kpe = models.CharField(max_length=255, null=True, blank=True)
+    levelAksesId = models.IntegerField(null=True, blank=True)
+    created_at = models.DateTimeField(null=True, blank=True)
+    updated_at = models.DateTimeField(null=True, blank=True)
+    kodepos = models.CharField(max_length=255, null=True, blank=True)
+    level = models.IntegerField(null=True, blank=True)
+    avatar = models.CharField(max_length=255, null=True, blank=True)
+    idtbRwJabatan = models.IntegerField(null=True, blank=True)
+    jenisJabatan = models.CharField(max_length=255, null=True, blank=True)
+    instansiInduk = models.CharField(max_length=255, null=True, blank=True)
+    instansiKerja = models.CharField(max_length=255, null=True, blank=True)
+    unorInduk = models.CharField(max_length=255, null=True, blank=True)
+    kodeUnor = models.CharField(max_length=255, null=True, blank=True)
+    unorJabatan = models.CharField(max_length=255, null=True, blank=True)
+    jenisKategori = models.CharField(max_length=255, null=True, blank=True)
+    eselonJabatan = models.CharField(max_length=255, null=True, blank=True)
+    idRefJabatan = models.IntegerField(null=True, blank=True)
+    namaJabatan = models.CharField(max_length=255, null=True, blank=True)
+    tmtJabatan = models.DateField(null=True, blank=True)
+    nomorSkJabatan = models.CharField(max_length=255, null=True, blank=True)
+    tanggalSkJabatan = models.DateField(null=True, blank=True)
+    idRwJabatanSapk = models.IntegerField(null=True, blank=True)
+    kodenamaJabatan = models.CharField(max_length=255, null=True, blank=True)
+    namaEselon = models.CharField(max_length=255, null=True, blank=True)
+    namaUnor = models.CharField(max_length=255, null=True, blank=True)
+    idtbRwPendidikan = models.IntegerField(null=True, blank=True)
+    tingkatPendidikan = models.CharField(max_length=255, null=True, blank=True)
+    programStudi = models.CharField(max_length=255, null=True, blank=True)
+    nomorIjazah = models.CharField(max_length=255, null=True, blank=True)
+    tanggalIjazah = models.DateField(null=True, blank=True)
+    namaLembaga = models.CharField(max_length=255, null=True, blank=True)
+    statusPengangkatan = models.CharField(max_length=255, null=True, blank=True)
+    namaTkPendidikan = models.CharField(max_length=255, null=True, blank=True)
+    idtbRef_tkPendidikan = models.IntegerField(null=True, blank=True)
+    idtbRwPangkat = models.IntegerField(null=True, blank=True)
+    namaPangkat = models.CharField(max_length=255, null=True, blank=True)
+    golonganPangkat = models.CharField(max_length=255, null=True, blank=True)
+    mkgTahunPangkat = models.CharField(max_length=255, null=True, blank=True)
+    mkgBulanPangkat = models.CharField(max_length=255, null=True, blank=True)
+    nomorSkPangkat = models.CharField(max_length=255, null=True, blank=True)
+    tanggalSkPangkat = models.DateField(null=True, blank=True)
+    tmtPangkat = models.DateField(null=True, blank=True)
+    nomorBknPangkat = models.CharField(max_length=255, null=True, blank=True)
+    tanggalBknPangkat = models.DateField(null=True, blank=True)
+    jenisKenaikanPangkat = models.CharField(max_length=255, null=True, blank=True)
+    jumlahAngkaKredit = models.CharField(max_length=255, null=True, blank=True)
+    idtbRwDiklat = models.IntegerField(null=True, blank=True)
+    jenisDiklat = models.CharField(max_length=255, null=True, blank=True)
+    tingkatanDiklat = models.CharField(max_length=255, null=True, blank=True)
+    namaDiklat = models.CharField(max_length=255, null=True, blank=True)
+    jumlahJam = models.CharField(max_length=255, null=True, blank=True)
+    tanggalDiklat = models.CharField(max_length=255, null=True, blank=True)
+    tahunDiklat = models.CharField(max_length=255, null=True, blank=True)
+    nomorSertifikat = models.CharField(max_length=255, null=True, blank=True)
+    instansiDiklat = models.CharField(max_length=255, null=True, blank=True)
+    institusiPenyelenggara = models.CharField(max_length=255, null=True, blank=True)
+    golongan = models.CharField(max_length=255, null=True, blank=True)
+    predikat = models.CharField(max_length=255, null=True, blank=True)
+    nilaiKinerja = models.CharField(max_length=255, null=True, blank=True)
+    tahunLaporanSkp = models.CharField(max_length=255, null=True, blank=True)
+
+    def __str__(self):
+        return self.namaPegawai
+
+    def save(self, *args, **kwargs):
+        # Set ImageField values to blank (temporary)
+        self.fotoPegawai = None
+        super().save(*args, **kwargs)
+
+class Kehadiran(models.Model):
+    id_kehadiran = models.AutoField(primary_key=True)
+    pegawai = models.ForeignKey(Pegawai, on_delete=models.CASCADE)
+    tanggal_apel = models.DateField()
+    STATUS_CHOICES = [
+        ('hadir', 'Hadir'),
+        ('izin', 'Izin'),
+        ('sakit', 'Sakit'),
+    ]
+    status_apel = models.CharField(max_length=10, choices=STATUS_CHOICES, default='hadir')
+    keterangan = models.TextField(blank=True, null=True)
+
+    class Meta:
+        unique_together = ('pegawai', 'tanggal_apel') # Satu pegawai hanya bisa satu catatan kehadiran per hari
+
+    def __str__(self):
+        return f"{self.pegawai.namaPegawai} - {self.tanggal_apel}"
