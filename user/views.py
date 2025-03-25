@@ -13,6 +13,8 @@ from app.serializers import PegawaiSerializer
 import logging
 from rest_framework.permissions import IsAuthenticated
 from user.permissions import IsSuperUser
+from rest_framework import generics
+from user.serializers import UserSerializer
 
 load_dotenv()
 
@@ -61,3 +63,15 @@ class CreatePegawaiUserView(APIView):
             except Pegawai.DoesNotExist:
                 return Response({'error': 'Data pegawai dengan email ini tidak ditemukan.'}, status=status.HTTP_400_BAD_REQUEST)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+
+class UserListView(generics.ListAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = [IsAuthenticated, IsSuperUser]
+
+class UserDeleteView(generics.DestroyAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = [IsAuthenticated, IsSuperUser]
+    lookup_field = 'id'

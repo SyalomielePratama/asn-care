@@ -31,7 +31,7 @@ class Command(BaseCommand):
         password = os.environ.get('API_PASSWORD')
         login_url = os.environ.get('API_LOGIN_URL')
         get_pegawai_url = os.environ.get('API_GET_PEGAWAI_URL')
-        kode_unor = "651301400"  # Kode Unor yang ingin diambil datanya
+        kode_unor = "651301400"   # Kode Unor yang ingin diambil datanya
         payload = {"email": email, "password": password}
 
         self.stdout.write(self.style.SUCCESS('Mencoba login ke API...'))
@@ -52,7 +52,7 @@ class Command(BaseCommand):
             pegawai_response = requests.get(url, headers=headers, verify=False)
             pegawai_response.raise_for_status()
             pegawai_data = pegawai_response.json()
-            pegawai_list = pegawai_data.get('data', [])
+            pegawai_list = pegawai_data.get('data',)
 
             created_count = 0
             updated_count = 0
@@ -69,18 +69,23 @@ class Command(BaseCommand):
                         pegawai_instance = Pegawai.objects.get(nipBaru=nip_baru)
                         # Update data yang ada
                         for key, value in pegawai_record.items():
-                            if key not in ['idtbPegawai', 'created_at', 'id_pegawai']:  # Jangan update ID eksternal, waktu pembuatan, dan ID internal
+                            if key not in ['idtbPegawai', 'created_at', 'id_pegawai']:   # Jangan update ID eksternal, waktu pembuatan, dan ID internal
                                 setattr(pegawai_instance, key, value)
                         pegawai_instance.updated_at = timezone.now()
                         pegawai_instance.save()
                         updated_count += 1
                     except Pegawai.DoesNotExist:
-                        # Validasi idRefJabatan dan email
-                        if 'idRefJabatan' in pegawai_record and not isinstance(pegawai_record['idRefJabatan'], int):
+                        # Validasi idRefJabatan
+                        if 'idRefJabatan' in pegawai_record and not isinstance(pegawai_record['idRefJabatan'], (int, type(None))):
                             pegawai_record['idRefJabatan'] = None  # Atau nilai default yang sesuai
 
-                        if 'email' in pegawai_record and not is_valid_email(pegawai_record['email']):
-                            pegawai_record['email'] = None  # Atau nilai default yang sesuai
+                        # Validasi dan pembuatan email otomatis jika tidak valid atau tidak ada
+                        email_pegawai = pegawai_record.get('email')
+                        if not is_valid_email(email_pegawai):
+                            nama_depan = pegawai_record.get('namaPegawai', '').split(' ')[0].lower()
+                            email_domain = "jwt.id"
+                            email_pegawai = f"{nama_depan}@{email_domain}"
+                            pegawai_record['email'] = email_pegawai
 
                         # Buat pegawai baru
                         serializer = PegawaiSerializer(data=pegawai_record)
@@ -90,9 +95,8 @@ class Command(BaseCommand):
 
                             # Buat user pegawai jika belum ada
                             nama_depan = pegawai_record.get('namaPegawai', '').split(' ')[0].lower()
-                            email_domain = os.environ.get('API_EMAIL').split('@')[1]
+                            email_domain = "jwt.id"
                             username = f"{nama_depan}@{email_domain}"
-                            email_pegawai = pegawai_record.get('email')
 
                             if email_pegawai and not User.objects.filter(email=email_pegawai).exists():
                                 user = User.objects.create_user(

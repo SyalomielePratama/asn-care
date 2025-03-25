@@ -1,5 +1,7 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.db.models.signals import post_delete
+from django.dispatch import receiver
 
 class CustomUser(AbstractUser):
     is_pegawai = models.BooleanField(default=False)
@@ -25,3 +27,13 @@ class CustomUser(AbstractUser):
 
     def __str__(self):
         return self.username
+    
+@receiver(post_delete, sender=CustomUser)
+def delete_related_pegawai(sender, instance, **kwargs):
+    if instance.is_pegawai and instance.email:
+        from app.models import Pegawai
+        try:
+            pegawai = Pegawai.objects.get(email=instance.email)
+            pegawai.delete()
+        except Pegawai.DoesNotExist:
+            pass
