@@ -4,11 +4,27 @@ from .serializers import PegawaiSerializer, KehadiranSerializer, KehadiranListSe
 from user.permissions import IsSuperUser, IsPegawaiOrReadOnly
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.exceptions import PermissionDenied
+from django.contrib.auth import get_user_model
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+User = get_user_model()
 
 class PegawaiListCreateView(generics.ListCreateAPIView):
     queryset = Pegawai.objects.all()
     serializer_class = PegawaiSerializer
     permission_classes = [IsAuthenticated, IsSuperUser]
+
+    def perform_create(self, serializer):
+        instance = serializer.save()
+        email_pegawai = instance.email
+        if email_pegawai and not User.objects.filter(email=email_pegawai).exists():
+            nama_depan = instance.namaPegawai.split(' ')[0].lower()
+            username = f"{nama_depan}@{os.environ.get('API_EMAIL').split('@')[1]}"
+            password = '123456789'
+            user = User.objects.create_user(username=username, email=email_pegawai, password=password, is_pegawai=True)
+            user.save()
 
 class PegawaiRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Pegawai.objects.all()

@@ -1,6 +1,11 @@
 from django.db import models
 from django.utils import timezone
 from PIL import Image
+from django.contrib.auth import get_user_model
+from django.db.models.signals import post_save, post_delete, pre_save
+from django.dispatch import receiver
+
+User = get_user_model()
 
 class Pegawai(models.Model):
     id_pegawai = models.AutoField(primary_key=True) # ID baru untuk database
@@ -108,6 +113,30 @@ class Pegawai(models.Model):
         # Set ImageField values to blank (temporary)
         self.fotoPegawai = None
         super().save(*args, **kwargs)
+
+@receiver(pre_save, sender=Pegawai)
+def update_pegawai_user_email(sender, instance, **kwargs):
+    try:
+        old_pegawai = Pegawai.objects.get(pk=instance.pk)
+        if old_pegawai.email != instance.email and instance.email:
+            try:
+                user = User.objects.get(email=old_pegawai.email)
+                if user.is_pegawai:
+                    user.email = instance.email
+                    user.save()
+            except User.DoesNotExist:
+                pass
+    except Pegawai.DoesNotExist:
+        # Ini terjadi saat instance baru pertama kali dibuat, kita tidak perlu melakukan apa-apa
+        pass
+
+@receiver(post_delete, sender=Pegawai)
+def delete_pegawai_user(sender, instance, **kwargs):
+    try:
+        user = User.objects.get(email=instance.email)
+        user.delete()
+    except User.DoesNotExist:
+        pass
 
 class Kehadiran(models.Model):
     id_kehadiran = models.AutoField(primary_key=True)
