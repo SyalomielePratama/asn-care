@@ -68,15 +68,27 @@ class KehadiranListCreateView(generics.ListCreateAPIView):
 
     def get_queryset(self):
         user = self.request.user
+        queryset = Kehadiran.objects.none()
         if user.is_superuser:
-            return Kehadiran.objects.all()
+            queryset = Kehadiran.objects.all()
         elif user.is_pegawai:
             try:
                 pegawai = Pegawai.objects.get(email=user.email)
-                return Kehadiran.objects.filter(pegawai=pegawai)
+                queryset = Kehadiran.objects.filter(pegawai=pegawai)
             except Pegawai.DoesNotExist:
                 return Kehadiran.objects.none()
-        return Kehadiran.objects.none()
+
+        tanggal_mulai = self.request.query_params.get('tanggal_mulai')
+        tanggal_akhir = self.request.query_params.get('tanggal_akhir')
+
+        if tanggal_mulai and tanggal_akhir:
+            queryset = queryset.filter(tanggal_apel__gte=tanggal_mulai, tanggal_apel__lte=tanggal_akhir)
+        elif tanggal_mulai:
+            queryset = queryset.filter(tanggal_apel__gte=tanggal_mulai)
+        elif tanggal_akhir:
+            queryset = queryset.filter(tanggal_apel__lte=tanggal_akhir)
+
+        return queryset
 
     def perform_create(self, serializer):
         user = self.request.user

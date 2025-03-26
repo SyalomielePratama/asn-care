@@ -147,7 +147,7 @@ class Kehadiran(models.Model):
         ('izin', 'Izin'),
         ('sakit', 'Sakit'),
     ]
-    status_apel = models.CharField(max_length=10, choices=STATUS_CHOICES, default='hadir')
+    status_apel = models.CharField(max_length=10, choices=STATUS_CHOICES)
     keterangan = models.TextField(blank=True, null=True)
 
     class Meta:

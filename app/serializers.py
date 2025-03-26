@@ -31,12 +31,12 @@ class PegawaiSerializer(serializers.ModelSerializer):
 class KehadiranSerializer(serializers.ModelSerializer):
     class Meta:
         model = Kehadiran
-        fields = '__all__'
-        read_only_fields = ('id_kehadiran',)
+        fields = ['id_kehadiran', 'tanggal_apel', 'status_apel', 'keterangan', 'pegawai'] # Tambahkan 'pegawai' ke fields
+        read_only_fields = ('id_kehadiran', 'pegawai') # Jadikan 'pegawai' read_only
 
 class KehadiranListSerializer(serializers.ModelSerializer):
     pegawai_nama = serializers.CharField(source='pegawai.namaPegawai', read_only=True)
     class Meta:
         model = Kehadiran
         fields = ['id_kehadiran', 'pegawai', 'pegawai_nama', 'tanggal_apel', 'status_apel', 'keterangan']
-        read_only_fields = ('id_kehadiran',)
+        read_only_fields = ('id_kehadiran', 'pegawai', 'pegawai_nama') # Jadikan 'pegawai' dan 'pegawai_nama' read_only
