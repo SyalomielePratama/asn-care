@@ -226,7 +226,7 @@ Berikut adalah daftar endpoint API yang tersedia:
 * **`GET /api/kehadiran/?tanggal_mulai=yyyy-mm-hh&tanggal_akhir=yyyy-mm-hh`**: Mendapatkan Riwayat Data Kehadiran Di tanggal Tertentu , catatan kehadiran apel untuk pegawai yang sedang login.
     * **Membutuhkan:** Autentikasi JWT sebagai pegawai (`is_pegawai=True`).
     * **Header Request:** `Authorization: Bearer <token>`.
-    * **Body Request:** Contoh:
+    * **Response (Suksess):** Contoh:
         ```json
         {
             "id_kehadiran": 1,
