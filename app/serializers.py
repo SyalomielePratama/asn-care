@@ -2,6 +2,7 @@ from rest_framework import serializers
 from .models import Pegawai, Kehadiran
 
 class PegawaiSerializer(serializers.ModelSerializer):
+    umur = serializers.IntegerField(read_only=True) # Tambahkan field umur
     fotoPegawai = serializers.CharField(allow_blank=True, allow_null=True, required=False)
     link_file_apps_karpeg = serializers.CharField(allow_blank=True, allow_null=True, required=False)
     link_file_apps_npwp = serializers.CharField(allow_blank=True, allow_null=True, required=False)
@@ -12,7 +13,7 @@ class PegawaiSerializer(serializers.ModelSerializer):
     class Meta:
         model = Pegawai
         fields = '__all__'
-        read_only_fields = ('id_pegawai',)
+        read_only_fields = ('id_pegawai','umur')
 
     def create(self, validated_data):
         validated_data['fotoPegawai'] = None

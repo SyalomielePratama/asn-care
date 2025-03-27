@@ -14,7 +14,8 @@ import logging
 from rest_framework.permissions import IsAuthenticated
 from user.permissions import IsSuperUser
 from rest_framework import generics
-from user.serializers import UserSerializer
+from user.serializers import UserSerializer, ChangePasswordSerializer
+from user.permissions import IsSuperUser, IsPegawai
 
 load_dotenv()
 
@@ -75,3 +76,21 @@ class UserDeleteView(generics.DestroyAPIView):
     serializer_class = UserSerializer
     permission_classes = [IsAuthenticated, IsSuperUser]
     lookup_field = 'id'
+
+class ChangePasswordView(APIView):
+    permission_classes = [IsAuthenticated, IsPegawai] # Hanya pegawai yang bisa mengakses
+
+    def post(self, request):
+        serializer = ChangePasswordSerializer(data=request.data)
+        if serializer.is_valid():
+            user = request.user
+            old_password = serializer.validated_data['old_password']
+            new_password = serializer.validated_data['new_password']
+
+            if not user.check_password(old_password):
+                return Response({'error': 'Password lama salah.'}, status=status.HTTP_400_BAD_REQUEST)
+
+            user.set_password(new_password)
+            user.save()
+            return Response({'message': 'Password berhasil diubah.'}, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

@@ -4,6 +4,7 @@ from PIL import Image
 from django.contrib.auth import get_user_model
 from django.db.models.signals import post_save, post_delete, pre_save
 from django.dispatch import receiver
+from datetime import date
 
 User = get_user_model()
 
@@ -113,6 +114,16 @@ class Pegawai(models.Model):
         # Set ImageField values to blank (temporary)
         self.fotoPegawai = None
         super().save(*args, **kwargs)
+
+    #Untuk Perhitungan Umur Pegawai
+    @property
+    def umur(self):
+        if self.tanggalLahir:
+            today = date.today()
+            birth_date = self.tanggalLahir
+            age = today.year - birth_date.year - ((today.month, today.day) < (birth_date.month, birth_date.day))
+            return age
+        return None
 
 @receiver(pre_save, sender=Pegawai)
 def update_pegawai_user_email(sender, instance, **kwargs):

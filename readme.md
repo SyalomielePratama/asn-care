@@ -203,6 +203,20 @@ Berikut adalah daftar endpoint API yang tersedia:
     * **Body Request:** Data pegawai yang ingin diperbarui dalam format JSON.
     * **Response (Sukses):** Mengembalikan data pegawai yang telah diperbarui.
 
+* **`POST /api/user/change-password/`**: Mengganti Password pegawai yang sedang login.
+    * **Membutuhkan:** Autentikasi JWT sebagai pegawai (`is_pegawai=True`).
+    * **Header Request:** `Authorization: Bearer <token>`.
+    * **Body Request:** Data pegawai yang ingin diperbarui dalam format JSON.
+        contoh : 
+        ```json
+        {
+            "old_password": "password_lama_pegawai",
+            "new_password": "password_baru_pegawai",
+            "confirm_password": "password_baru_pegawai"
+        }
+        ```
+    * **Response (Sukses):** Mengembalikan data pegawai yang telah diperbarui.
+
 ### Manajemen Kehadiran
 
 * **`GET /api/kehadiran/`**: Mendapatkan daftar catatan kehadiran.
