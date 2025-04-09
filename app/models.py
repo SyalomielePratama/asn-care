@@ -8,6 +8,22 @@ from datetime import date
 
 User = get_user_model()
 
+JENIS_CUTI_TAHUNAN = 'tahunan'
+JENIS_CUTI_SAKIT = 'sakit'
+JENIS_CUTI_BESAR = 'besar'
+JENIS_CUTI_MELAHIRKAN = 'melahirkan'
+JENIS_CUTI_ALASAN_PENTING = 'penting'
+JENIS_CUTI_DILUAR_TANGGUNGAN = 'diluar'
+
+JENIS_CUTI_CHOICES = [
+    (JENIS_CUTI_TAHUNAN, 'Cuti Tahunan'),
+    (JENIS_CUTI_SAKIT, 'Cuti Sakit'),
+    (JENIS_CUTI_BESAR, 'Cuti Besar'),
+    (JENIS_CUTI_MELAHIRKAN, 'Cuti Melahirkan'),
+    (JENIS_CUTI_ALASAN_PENTING, 'Cuti Alasan Penting'),
+    (JENIS_CUTI_DILUAR_TANGGUNGAN, 'Cuti Diluar Tanggungan Negara'),
+]
+
 class Pegawai(models.Model):
     id_pegawai = models.AutoField(primary_key=True) # ID baru untuk database
     idtbPegawai = models.IntegerField(null=True, blank=True)
@@ -166,3 +182,35 @@ class Kehadiran(models.Model):
 
     def __str__(self):
         return f"{self.pegawai.namaPegawai} - {self.tanggal_apel}"
+    
+class CutiBase(models.Model):
+    nama = models.ForeignKey('Pegawai', on_delete=models.CASCADE, related_name='%(class)s_requests')
+    nip = models.CharField(max_length=255, blank=True, null=True)
+    jabatan = models.CharField(max_length=255, blank=True, null=True)
+    masa_jabatan_tahun = models.IntegerField()
+    masa_jabatan_bulan = models.IntegerField()
+    jenis_cuti = models.CharField(max_length=20, choices=JENIS_CUTI_CHOICES)
+    alasan_cuti = models.TextField()
+    tanggal_mulai = models.DateField()
+    tanggal_selesai = models.DateField()
+    alamat_cuti = models.TextField()
+    telepon = models.CharField(max_length=255)
+    pimpinan_1 = models.ForeignKey('Pegawai', on_delete=models.SET_NULL, null=True, blank=True, related_name='%(class)s_dipimpin_1')
+    pimpinan_2 = models.ForeignKey('Pegawai', on_delete=models.SET_NULL, null=True, blank=True, related_name='%(class)s_dipimpin_2')
+    pimpinan_3 = models.ForeignKey('Pegawai', on_delete=models.SET_NULL, null=True, blank=True, related_name='%(class)s_dipimpin_3')
+    tanggal_dibuat = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        abstract = True
+
+class CutiPNS(CutiBase):
+    pass
+
+class CutiPPPK(CutiBase):
+    pass
+
+class CutiPPT(CutiBase):
+    pass
+
+class CutiESIII(CutiBase):
+    pass

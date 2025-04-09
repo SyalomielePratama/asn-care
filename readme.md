@@ -261,6 +261,89 @@ Berikut adalah daftar endpoint API yang tersedia:
         ```
     * **Response (Sukses):** Mengembalikan catatan kehadiran yang baru dibuat dengan status `201 Created`.
 
+### Pengajuan Cuti 
+
+* **`POST /api/cuti/pns/`**: pengjuan cuti pegawai.
+    * **Membutuhkan:** Autentikasi JWT sebagai pegawai (`is_pegawai=True`).
+    * **Header Request:** `Authorization: Bearer <token>`.
+    * **Body Request:** Data pegawai yang ingin diperbarui dalam format JSON.
+        contoh : 
+        ```json
+        {
+            "masa_jabatan_tahun": 3,
+            "masa_jabatan_bulan": 2,
+            "jenis_cuti": "tahunan",
+            "alasan_cuti": "Liburan keluarga",
+            "tanggal_mulai": "2025-05-10",
+            "tanggal_selesai": "2025-05-12",
+            "alamat_cuti": "Jl. Kenangan No. 1, Malang",
+            "telepon": "081234567890",
+            "pimpinan_1": 2,  // ID Pegawai dari pimpinan 1
+            "pimpinan_2": 3,  // ID Pegawai dari pimpinan 2 (opsional)
+            "pimpinan_3": null // ID Pegawai dari pimpinan 3 (opsional)
+        }
+        ```
+    * **Response (Sukses):** Mengembalikan data cuti pegawai.
+    * **Response (Gagal):** Jatah cuti tahunan Anda hanya 12 hari. Anda telah menggunakan {total_cuti_diambil} hari dan pengajuan cuti ini sebanyak {lama_cuti_diajukan} hari akan melebihi batas.
+    * **Response (Gagal):** "Cuti melahirkan tidak boleh lebih dari 3 bulan.".
+
+* **`GET /api/cuti/pns/`**: Ambil data cuti pegawai.
+    * **Membutuhkan:** Autentikasi JWT sebagai pegawai (`is_pegawai=True`).
+    * **Header Request:** `Authorization: Bearer <token>`.
+    * **Response (Suksess):** 
+        contoh : 
+        ```json
+       {
+        "total_cuti_diambil": 12,
+        "sisa_cuti": 0,
+        "results": [
+            {
+            "id": 1,
+            "nama": "asd",
+            "nip": null,
+            "jabatan": null,
+            "pimpinan_1": 2,
+            "pimpinan_2": 3,
+            "pimpinan_3": null,
+            "masa_jabatan_tahun": 3,
+            "masa_jabatan_bulan": 5,
+            "jenis_cuti": "tahunan",
+            "alasan_cuti": "Liburan bersama keluarga",
+            "tanggal_mulai": "2025-05-20",
+            "tanggal_selesai": "2025-05-30",
+            "alamat_cuti": "Jl. Kenangan No. 123, Malang",
+            "telepon": "081234567890",
+            "tanggal_dibuat": "2025-04-08T23:40:47.454722Z",
+            "pimpinan_1_nama": "GATOT SUWARDIYONO",
+            "pimpinan_2_nama": "IWAN HERI KRISTANTO",
+            "pimpinan_3_nama": null
+            },
+            {
+            "id": 2,
+            "nama": "asd",
+            "nip": null,
+            "jabatan": null,
+            "pimpinan_1": 2,
+            "pimpinan_2": 3,
+            "pimpinan_3": null,
+            "masa_jabatan_tahun": 3,
+            "masa_jabatan_bulan": 5,
+            "jenis_cuti": "tahunan",
+            "alasan_cuti": "Liburan bersama keluarga",
+            "tanggal_mulai": "2025-06-20",
+            "tanggal_selesai": "2025-06-20",
+            "alamat_cuti": "Jl. Kenangan No. 123, Malang",
+            "telepon": "081234567890",
+            "tanggal_dibuat": "2025-04-08T23:41:14.361236Z",
+            "pimpinan_1_nama": "GATOT SUWARDIYONO",
+            "pimpinan_2_nama": "IWAN HERI KRISTANTO",
+            "pimpinan_3_nama": null
+            }
+        ]
+        }
+        ```
+
+
 ## 5. Format Data
 
 Semua pertukaran data dengan API ini menggunakan format **JSON**.
