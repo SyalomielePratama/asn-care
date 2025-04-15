@@ -343,6 +343,112 @@ Berikut adalah daftar endpoint API yang tersedia:
         }
         ```
 
+### Kenaikan Pangkat Dan Gaji
+
+* **`GET /api/pegawai/profile/`**: Mendapatkan profil pegawai yang sedang login.
+    * **Membutuhkan:** Autentikasi JWT sebagai pegawai (`is_pegawai=True`).
+    * **Header Request:** `Authorization: Bearer <token>`.
+    * **Response (Sukses):** Mengembalikan detail data pegawai yang sedang login.
+
+* ** `CONTOH PENGGUNAAN`**: Pangkat
+    * Contoh Penggunaan React
+    ```jsx
+    {/* Reminder Kenaikan Pangkat */}
+            {waktu_kenaikan_pangkat && (
+                <div>
+                    {waktu_kenaikan_pangkat[0] === 0 && waktu_kenaikan_pangkat[1] === 0 ? (
+                        <p>Anda waktunya naik Pangkat sekarang!</p>
+                    ) : (
+                        <p>
+                            {waktu_kenaikan_pangkat[0]} tahun {waktu_kenaikan_pangkat[1]} bulan lagi anda waktunya naik pangkat.
+                        </p>
+                    )}
+                </div>
+            )}  
+    ```
+
+    * ** `CONTOH PENGGUNAAN`**: Gaji
+    * Contoh Penggunaan React
+    ```jsx
+    {/* Reminder Kenaikan Gaji */}
+            {waktu_kenaikan_gaji && (
+                <div>
+                    {waktu_kenaikan_gaji[0] === 0 && waktu_kenaikan_gaji[1] === 0 ? (
+                        <p>Anda waktunya naik Gaji sekarang!</p>
+                    ) : (
+                        <p>
+                            {waktu_kenaikan_gaji[0]} tahun {waktu_kenaikan_gaji[1]} bulan lagi anda waktunya naik gaji.
+                        </p>
+                    )}
+                </div>
+            )}  
+    ```
+
+### Pensiun
+
+* **`GET /api/pegawai/profile/`**: Mendapatkan profil pegawai yang sedang login.
+    * **Membutuhkan:** Autentikasi JWT sebagai pegawai (`is_pegawai=True`).
+    * **Header Request:** `Authorization: Bearer <token>`.
+    * **Response (Sukses):** Mengembalikan detail data pegawai yang sedang login.
+
+* ** `CONTOH PENGGUNAAN`**: Pensiun
+    * Contoh Penggunaan React
+    ```jsx
+            const Pensiun = () => {
+                const [profile, setProfile] = useState(null);
+                const [retirementMessage, setRetirementMessage] = useState('');
+
+                useEffect(() => {
+                    const fetchProfile = async () => {
+                        try {
+                            const token = localStorage.getItem('accessToken'); // Atau cara Anda menyimpan token
+                            const response = await axios.get('/api/pegawai/profile/', {
+                                headers: {
+                                    Authorization: `Bearer ${token}`,
+                                },
+                            });
+                            setProfile(response.data);
+                        } catch (error) {
+                            console.error('Gagal mengambil profil pegawai:', error);
+                        }
+                    };
+
+                    fetchProfile();
+                }, []);
+
+                useEffect(() => {
+                    if (profile) {
+                        if (profile.umur >= 60) {
+                            setRetirementMessage('Anda sudah mencapai atau melewati usia pensiun. Harap segera mengajukan pensiun.');
+                        } else {
+                            const yearsLeft = 60 - profile.umur;
+                            setRetirementMessage(`Anda memiliki ${yearsLeft} tahun lagi sebelum pensiun.`);
+                        }
+                    }
+                }, [profile]);
+
+                return (
+                    <div>
+                        <h1>Selamat Datang di Dashboard</h1>
+                        {profile && (
+                            <div>
+                                <p>Nama: {profile.namaPegawai}</p>
+                                <p>Email: {profile.email}</p>
+                                <p>Usia: {profile.umur}</p>
+                            </div>
+                        )}
+
+                        {retirementMessage && (
+                            <div style={{ backgroundColor: 'yellow', padding: '10px', marginTop: '20px' }}>
+                                <strong>Pemberitahuan:</strong> {retirementMessage}
+                            </div>
+                        )}
+                    </div>
+                );
+            };
+
+            export default Pensiun;  
+    ```
 
 ## 5. Format Data
 

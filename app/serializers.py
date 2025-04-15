@@ -9,11 +9,19 @@ class PegawaiSerializer(serializers.ModelSerializer):
     link_file_apps_kpe = serializers.CharField(allow_blank=True, allow_null=True, required=False)
     idRefJabatan = serializers.IntegerField(allow_null=True, required=False)
     email = serializers.EmailField(allow_blank=True, allow_null=True, required=False)
+    waktu_kenaikan_pangkat = serializers.SerializerMethodField()
+    waktu_kenaikan_gaji = serializers.SerializerMethodField()
 
     class Meta:
         model = Pegawai
         fields = '__all__'
-        read_only_fields = ('id_pegawai','umur')
+        read_only_fields = ('id_pegawai','umur', 'waktu_kenaikan_pangkat', 'waktu_kenaikan_gaji')
+    
+    def get_waktu_kenaikan_pangkat(self, obj):
+        return obj.waktu_kenaikan_pangkat()
+
+    def get_waktu_kenaikan_gaji(self, obj):
+        return obj.waktu_kenaikan_gaji()
 
     def create(self, validated_data):
         validated_data['fotoPegawai'] = None

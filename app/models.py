@@ -122,6 +122,7 @@ class Pegawai(models.Model):
     predikat = models.CharField(max_length=255, null=True, blank=True)
     nilaiKinerja = models.CharField(max_length=255, null=True, blank=True)
     tahunLaporanSkp = models.CharField(max_length=255, null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)  # Tanggal pembuatan akun
 
     def __str__(self):
         return self.namaPegawai
@@ -139,6 +140,36 @@ class Pegawai(models.Model):
             birth_date = self.tanggalLahir
             age = today.year - birth_date.year - ((today.month, today.day) < (birth_date.month, birth_date.day))
             return age
+        return None
+    
+    def waktu_kenaikan_pangkat(self):
+        if self.created_at:
+            tahun_sekarang = date.today().year
+            tahun_terakhir_kenaikan_pangkat = self.created_at.year + 4 * ((tahun_sekarang - self.created_at.year) // 4 + 1)
+            selisih_tahun = tahun_terakhir_kenaikan_pangkat - tahun_sekarang
+            
+            # Hitung bulan
+            bulan_sekarang = date.today().month
+            bulan_kenaikan_pangkat = (bulan_sekarang + 12 * (selisih_tahun)) % 12
+            
+            if selisih_tahun == 0 and bulan_kenaikan_pangkat == 0:
+                return 0, 0  # Kenaikan pangkat sekarang
+            return selisih_tahun, bulan_kenaikan_pangkat  # Mengembalikan tahun dan bulan
+        return None
+
+    def waktu_kenaikan_gaji(self):
+        if self.created_at:
+            tahun_sekarang = date.today().year
+            tahun_terakhir_kenaikan_gaji = self.created_at.year + 2 * ((tahun_sekarang - self.created_at.year) // 2 + 1)
+            selisih_tahun = tahun_terakhir_kenaikan_gaji - tahun_sekarang
+            
+            # Hitung bulan
+            bulan_sekarang = date.today().month
+            bulan_kenaikan_gaji = (bulan_sekarang + 12 * (selisih_tahun)) % 12
+            
+            if selisih_tahun == 0 and bulan_kenaikan_gaji == 0:
+                return 0, 0  # Kenaikan gaji sekarang
+            return selisih_tahun, bulan_kenaikan_gaji  # Mengembalikan tahun dan bulan
         return None
 
 @receiver(pre_save, sender=Pegawai)
