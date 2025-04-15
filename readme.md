@@ -353,35 +353,63 @@ Berikut adalah daftar endpoint API yang tersedia:
 * ** `CONTOH PENGGUNAAN`**: Pangkat
     * Contoh Penggunaan React
     ```jsx
-    {/* Reminder Kenaikan Pangkat */}
-            {waktu_kenaikan_pangkat && (
-                <div>
-                    {waktu_kenaikan_pangkat[0] === 0 && waktu_kenaikan_pangkat[1] === 0 ? (
-                        <p>Anda waktunya naik Pangkat sekarang!</p>
-                    ) : (
-                        <p>
-                            {waktu_kenaikan_pangkat[0]} tahun {waktu_kenaikan_pangkat[1]} bulan lagi anda waktunya naik pangkat.
-                        </p>
-                    )}
-                </div>
-            )}  
-    ```
+            import React, { useEffect, useState } from 'react';
+            import axios from 'axios';
 
-    * ** `CONTOH PENGGUNAAN`**: Gaji
-    * Contoh Penggunaan React
-    ```jsx
-    {/* Reminder Kenaikan Gaji */}
-            {waktu_kenaikan_gaji && (
-                <div>
-                    {waktu_kenaikan_gaji[0] === 0 && waktu_kenaikan_gaji[1] === 0 ? (
-                        <p>Anda waktunya naik Gaji sekarang!</p>
-                    ) : (
-                        <p>
-                            {waktu_kenaikan_gaji[0]} tahun {waktu_kenaikan_gaji[1]} bulan lagi anda waktunya naik gaji.
-                        </p>
-                    )}
-                </div>
-            )}  
+            const Reminder = () => {
+                const [pegawai, setPegawai] = useState(null);
+
+                useEffect(() => {
+                    const fetchPegawai = async () => {
+                        const response = await axios.get('/api/pegawai/profile/', {
+                            headers: {
+                                Authorization: `Bearer ${localStorage.getItem('token')}`
+                            }
+                        });
+                        setPegawai(response.data);
+                    };
+
+                    fetchPegawai();
+                }, []);
+
+                if (!pegawai) return <div>Loading...</div>;
+
+                const { waktu_kenaikan_pangkat, waktu_kenaikan_gaji } = pegawai;
+
+                return (
+                    <div>
+                        <h1>Profil Pegawai</h1>
+                        <p>Nama: {pegawai.namaPegawai}</p>
+                        {/* Reminder Kenaikan Pangkat */}
+                        {waktu_kenaikan_pangkat && (
+                            <div>
+                                {waktu_kenaikan_pangkat[0] === 0 && waktu_kenaikan_pangkat[1] === 0 ? (
+                                    <p>Anda waktunya naik Pangkat sekarang!</p>
+                                ) : (
+                                    <p>
+                                        {waktu_kenaikan_pangkat[0]} tahun {waktu_kenaikan_pangkat[1]} bulan lagi anda waktunya naik pangkat.
+                                    </p>
+                                )}
+                            </div>
+                        )}
+                        {/* Reminder Kenaikan Gaji */}
+                        {waktu_kenaikan_gaji && (
+                            <div>
+                                {waktu_kenaikan_gaji[0] === 0 && waktu_kenaikan_gaji[1] === 0 ? (
+                                    <p>Anda waktunya naik Gaji sekarang!</p>
+                                ) : (
+                                    <p>
+                                        {waktu_kenaikan_gaji[0]} tahun {waktu_kenaikan_gaji[1]} bulan lagi anda waktunya naik gaji.
+                                    </p>
+                                )}
+                            </div>
+                        )}
+                    </div>
+                );
+            };
+
+            export default Reminder
+  
     ```
 
 ### Pensiun
