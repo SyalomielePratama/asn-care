@@ -8,7 +8,7 @@ from .views import (
     CutiPPPKCreateListView,
     CutiPPTCreateListView,
     CutiESIIICreateListView,
-    
+    SisaCutiView
 )
 
 urlpatterns = [
@@ -20,4 +20,5 @@ urlpatterns = [
     path('cuti/pppk/', CutiPPPKCreateListView.as_view(), name='cuti-pppk-list-create'),
     path('cuti/ppt/', CutiPPTCreateListView.as_view(), name='cuti-ppt-list-create'),
     path('cuti/esiii/', CutiESIIICreateListView.as_view(), name='cuti-esiii-list-create'),
+    path('cuti/sisa/', SisaCutiView.as_view(), name='sisa-cuti')
 ]

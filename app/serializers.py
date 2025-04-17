@@ -16,12 +16,28 @@ class PegawaiSerializer(serializers.ModelSerializer):
         model = Pegawai
         fields = '__all__'
         read_only_fields = ('id_pegawai','umur', 'waktu_kenaikan_pangkat', 'waktu_kenaikan_gaji')
-    
+
     def get_waktu_kenaikan_pangkat(self, obj):
-        return obj.waktu_kenaikan_pangkat()
+        tahun, bulan = obj.waktu_kenaikan_pangkat()
+        if tahun is not None and bulan is not None:
+            if tahun > 0:
+                return f"{tahun} tahun {bulan} bulan lagi"
+            elif bulan > 0:
+                return f"{bulan} bulan lagi"
+            else:
+                return "Saat ini"
+        return None
 
     def get_waktu_kenaikan_gaji(self, obj):
-        return obj.waktu_kenaikan_gaji()
+        tahun, bulan = obj.waktu_kenaikan_gaji()
+        if tahun is not None and bulan is not None:
+            if tahun > 0:
+                return f"{tahun} tahun {bulan} bulan lagi"
+            elif bulan > 0:
+                return f"{bulan} bulan lagi"
+            else:
+                return "Saat ini"
+        return None
 
     def create(self, validated_data):
         validated_data['fotoPegawai'] = None

@@ -343,6 +343,18 @@ Berikut adalah daftar endpoint API yang tersedia:
         }
         ```
 
+* **`GET /api/cuti/sisa/`**: Ambil data cuti pegawai.
+    * **Membutuhkan:** Autentikasi JWT sebagai pegawai (`is_pegawai=True`).
+    * **Header Request:** `Authorization: Bearer <token>`.
+    * **Response (Suksess):** 
+        contoh : 
+        ```json
+            {
+                "total_cuti_diambil": 0,
+                "sisa_cuti": 12
+            }
+        ```
+
 ### Kenaikan Pangkat Dan Gaji
 
 * **`GET /api/pegawai/profile/`**: Mendapatkan profil pegawai yang sedang login.
@@ -350,65 +362,84 @@ Berikut adalah daftar endpoint API yang tersedia:
     * **Header Request:** `Authorization: Bearer <token>`.
     * **Response (Sukses):** Mengembalikan detail data pegawai yang sedang login.
 
-* ** `CONTOH PENGGUNAAN`**: Pangkat
+* ** `CONTOH PENGGUNAAN`**: Pangkat dn Gaji
     * Contoh Penggunaan React
     ```jsx
             import React, { useEffect, useState } from 'react';
             import axios from 'axios';
 
             const Reminder = () => {
-                const [pegawai, setPegawai] = useState(null);
+                const [pangkatMessage, setPangkatMessage] = useState("");
+                const [gajiMessage, setGajiMessage] = useState("");
+                const [profile, setPegawai] = useState(null); 
 
                 useEffect(() => {
                     const fetchPegawai = async () => {
-                        const response = await axios.get('/api/pegawai/profile/', {
-                            headers: {
-                                Authorization: `Bearer ${localStorage.getItem('token')}`
-                            }
-                        });
-                        setPegawai(response.data);
+                        try {
+                            const response = await axios.get('/api/pegawai/profile/', {
+                                headers: {
+                                    Authorization: `Bearer ${localStorage.getItem('token')}`
+                                }
+                            });
+                            setPegawai(response.data);
+                        } catch (error) {
+                            console.error("Error fetching profile:", error);
+                        }
                     };
 
                     fetchPegawai();
                 }, []);
 
-                if (!pegawai) return <div>Loading...</div>;
+                useEffect(() => {
+                    if (profile) {
+                        // Informasi Kenaikan Pangkat
+                        if (profile.waktu_kenaikan_pangkat) {
+                            setPangkatMessage(`Waktu kenaikan pangkat: ${profile.waktu_kenaikan_pangkat}`);
+                        } else {
+                            setPangkatMessage("Informasi kenaikan pangkat tidak tersedia.");
+                        }
 
-                const { waktu_kenaikan_pangkat, waktu_kenaikan_gaji } = pegawai;
+                        // Informasi Kenaikan Gaji
+                        if (profile.waktu_kenaikan_gaji) {
+                            setGajiMessage(`Waktu kenaikan gaji: ${profile.waktu_kenaikan_gaji}`);
+                        } else {
+                            setGajiMessage("Informasi kenaikan gaji tidak tersedia.");
+                        }
+                    }
+                }, [profile]);
 
                 return (
                     <div>
-                        <h1>Profil Pegawai</h1>
-                        <p>Nama: {pegawai.namaPegawai}</p>
-                        {/* Reminder Kenaikan Pangkat */}
-                        {waktu_kenaikan_pangkat && (
-                            <div>
-                                {waktu_kenaikan_pangkat[0] === 0 && waktu_kenaikan_pangkat[1] === 0 ? (
-                                    <p>Anda waktunya naik Pangkat sekarang!</p>
-                                ) : (
-                                    <p>
-                                        {waktu_kenaikan_pangkat[0]} tahun {waktu_kenaikan_pangkat[1]} bulan lagi anda waktunya naik pangkat.
-                                    </p>
-                                )}
+                        <div className="row">
+                            {/* Card 1: Kenaikan Gaji */}
+                            <div className="col-md-6 mb-4">
+                                <div className="card dashboard-card">
+                                    <div className="card-body">
+                                        <h5 className="card-title">Kenaikan Gaji</h5>
+                                        <div className="card sub-card bg-warning text-white mt-3">
+                                            <div className="card-body py-2 px-3">{gajiMessage}</div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                        )}
-                        {/* Reminder Kenaikan Gaji */}
-                        {waktu_kenaikan_gaji && (
-                            <div>
-                                {waktu_kenaikan_gaji[0] === 0 && waktu_kenaikan_gaji[1] === 0 ? (
-                                    <p>Anda waktunya naik Gaji sekarang!</p>
-                                ) : (
-                                    <p>
-                                        {waktu_kenaikan_gaji[0]} tahun {waktu_kenaikan_gaji[1]} bulan lagi anda waktunya naik gaji.
-                                    </p>
-                                )}
+
+                            {/* Card 2: Kenaikan Pangkat */}
+                            <div className="col-md-6 mb-4">
+                                <div className="card dashboard-card">
+                                    <div className="card-body">
+                                        <h5 className="card-title">Kenaikan Pangkat</h5>
+                                        <div className="card sub-card bg-danger text-white mt-3">
+                                            <div className="card-body py-2 px-3">{pangkatMessage}</div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                        )}
+                        </div>
                     </div>
                 );
             };
 
-            export default Reminder
+            export default Reminder;
   
     ```
 

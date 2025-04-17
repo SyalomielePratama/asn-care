@@ -3,7 +3,7 @@ from .models import Pegawai, Kehadiran, CutiPNS, CutiPPPK, CutiPPT, CutiESIII
 
 @admin.register(Pegawai)
 class PegawaiAdmin(admin.ModelAdmin):
-    list_display = ('id_pegawai', 'namaPegawai', 'nipBaru', 'email', 'instansiKerja')
+    list_display = ('id_pegawai', 'namaPegawai', 'nipBaru', 'email', 'instansiKerja', 'jenisPegawai')
     search_fields = ('namaPegawai', 'nipBaru', 'email')
     list_filter = ('instansiKerja', 'jenisPegawai')
     readonly_fields = ('id_pegawai',) # ID baru bersifat read-only di admin

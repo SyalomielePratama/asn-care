@@ -6,13 +6,17 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.exceptions import PermissionDenied
 from django.contrib.auth import get_user_model
 import os
+from rest_framework.views import APIView
+from rest_framework import status
 from dotenv import load_dotenv
 from datetime import date, timedelta, timezone
 from django.db.models import Sum
 from django.db.models.functions import ExtractDay
 from django.db import models
 from rest_framework.response import Response
+import logging
 
+logger = logging.getLogger(__name__)
 
 load_dotenv()
 User = get_user_model()
@@ -113,6 +117,29 @@ class CutiCreateListView(generics.ListCreateAPIView):
     permission_classes = [IsAuthenticated, IsPegawaiOrReadOnly]
     model = None # Akan diisi di subclass
     serializer_class = None # Akan diisi di subclass
+    jenis_pegawai_allowed = None # Akan diisi di subclass
+
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.is_authenticated:
+            user = request.user
+            try:
+                pegawai = Pegawai.objects.get(email=user.email)
+                if self.jenis_pegawai_allowed is not None and pegawai.jenisPegawai not in self.jenis_pegawai_allowed:
+                    raise PermissionDenied(f"Anda tidak memiliki izin untuk mengajukan cuti ini. Jenis pegawai Anda adalah {pegawai.jenisPegawai}.")
+            except Pegawai.DoesNotExist:
+                pass
+        return super().dispatch(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        if request.user.is_authenticated:
+            user = request.user
+            try:
+                pegawai = Pegawai.objects.get(email=user.email)
+                if self.jenis_pegawai_allowed is not None and pegawai.jenisPegawai not in self.jenis_pegawai_allowed:
+                    raise PermissionDenied(f"Anda tidak memiliki izin untuk mengajukan cuti ini. Jenis pegawai Anda adalah {pegawai.jenisPegawai}.")
+            except Pegawai.DoesNotExist:
+                pass
+        return super().post(request, *args, **kwargs)
 
     def get_queryset(self):
         user = self.request.user
@@ -192,15 +219,57 @@ class CutiCreateListView(generics.ListCreateAPIView):
 class CutiPNSCreateListView(CutiCreateListView):
     model = CutiPNS
     serializer_class = CutiPNSSerializer
+    jenis_pegawai_allowed = ['PNS']
 
 class CutiPPPKCreateListView(CutiCreateListView):
     model = CutiPPPK
     serializer_class = CutiPPPKSerializer
+    jenis_pegawai_allowed = ['PPPK']
 
 class CutiPPTCreateListView(CutiCreateListView):
     model = CutiPPT
     serializer_class = CutiPPTSerializer
+    jenis_pegawai_allowed = ['PPT']
 
 class CutiESIIICreateListView(CutiCreateListView):
     model = CutiESIII
     serializer_class = CutiESIIISerializer
+    jenis_pegawai_allowed = ['ESIII']
+
+class SisaCutiView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+        try:
+            pegawai = Pegawai.objects.get(email=user.email)
+            tahun_ini = date.today().year
+            jenis_pegawai = pegawai.jenisPegawai
+
+            total_cuti_diambil = 0
+            sisa_cuti = 12
+
+            if jenis_pegawai == 'PNS':
+                cuti_tahun_ini = CutiPNS.objects.filter(nama=pegawai, tanggal_mulai__year=tahun_ini)
+            elif jenis_pegawai == 'PPPK':
+                cuti_tahun_ini = CutiPPPK.objects.filter(nama=pegawai, tanggal_mulai__year=tahun_ini)
+            elif jenis_pegawai == 'PPT':
+                cuti_tahun_ini = CutiPPT.objects.filter(nama=pegawai, tanggal_mulai__year=tahun_ini)
+            elif jenis_pegawai == 'ESIII':
+                cuti_tahun_ini = CutiESIII.objects.filter(nama=pegawai, tanggal_mulai__year=tahun_ini)
+            else:
+                return Response({'error': f'Jenis pegawai "{jenis_pegawai}" tidak dikenali.'}, status=status.HTTP_400_BAD_REQUEST)
+
+            for cuti in cuti_tahun_ini:
+                lama = (cuti.tanggal_selesai - cuti.tanggal_mulai).days + 1
+                total_cuti_diambil += lama
+
+            sisa_cuti -= total_cuti_diambil
+
+            return Response({
+                'total_cuti_diambil': total_cuti_diambil,
+                'sisa_cuti': sisa_cuti
+            })
+
+        except Pegawai.DoesNotExist:
+            return Response({'error': 'Data pegawai tidak ditemukan.'}, status=status.HTTP_404_NOT_FOUND)

@@ -5,6 +5,7 @@ from django.contrib.auth import get_user_model
 from django.db.models.signals import post_save, post_delete, pre_save
 from django.dispatch import receiver
 from datetime import date
+from dateutil.relativedelta import relativedelta
 
 User = get_user_model()
 
@@ -144,32 +145,18 @@ class Pegawai(models.Model):
     
     def waktu_kenaikan_pangkat(self):
         if self.created_at:
-            tahun_sekarang = date.today().year
-            tahun_terakhir_kenaikan_pangkat = self.created_at.year + 4 * ((tahun_sekarang - self.created_at.year) // 4 + 1)
-            selisih_tahun = tahun_terakhir_kenaikan_pangkat - tahun_sekarang
-            
-            # Hitung bulan
-            bulan_sekarang = date.today().month
-            bulan_kenaikan_pangkat = (bulan_sekarang + 12 * (selisih_tahun)) % 12
-            
-            if selisih_tahun == 0 and bulan_kenaikan_pangkat == 0:
-                return 0, 0  # Kenaikan pangkat sekarang
-            return selisih_tahun, bulan_kenaikan_pangkat  # Mengembalikan tahun dan bulan
+            tanggal_pembuatan = self.created_at.date()
+            tanggal_kenaikan_pangkat_selanjutnya = tanggal_pembuatan + relativedelta(years=+4)
+            sisa_waktu = relativedelta(tanggal_kenaikan_pangkat_selanjutnya, date.today())
+            return sisa_waktu.years, sisa_waktu.months
         return None
 
     def waktu_kenaikan_gaji(self):
         if self.created_at:
-            tahun_sekarang = date.today().year
-            tahun_terakhir_kenaikan_gaji = self.created_at.year + 2 * ((tahun_sekarang - self.created_at.year) // 2 + 1)
-            selisih_tahun = tahun_terakhir_kenaikan_gaji - tahun_sekarang
-            
-            # Hitung bulan
-            bulan_sekarang = date.today().month
-            bulan_kenaikan_gaji = (bulan_sekarang + 12 * (selisih_tahun)) % 12
-            
-            if selisih_tahun == 0 and bulan_kenaikan_gaji == 0:
-                return 0, 0  # Kenaikan gaji sekarang
-            return selisih_tahun, bulan_kenaikan_gaji  # Mengembalikan tahun dan bulan
+            tanggal_pembuatan = self.created_at.date()
+            tanggal_kenaikan_gaji_selanjutnya = tanggal_pembuatan + relativedelta(years=+2)
+            sisa_waktu = relativedelta(tanggal_kenaikan_gaji_selanjutnya, date.today())
+            return sisa_waktu.years, sisa_waktu.months
         return None
 
 @receiver(pre_save, sender=Pegawai)
