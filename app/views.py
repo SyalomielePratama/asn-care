@@ -1,7 +1,7 @@
 from rest_framework import generics, permissions, serializers
 from .models import Pegawai, Kehadiran, CutiPNS, CutiPPPK, CutiPPT, CutiESIII, JENIS_CUTI_MELAHIRKAN
 from .serializers import PegawaiSerializer, KehadiranSerializer, KehadiranListSerializer, CutiPNSSerializer, CutiPPPKSerializer, CutiPPTSerializer, CutiESIIISerializer
-from user.permissions import IsSuperUser, IsPegawaiOrReadOnly
+from user.permissions import IsSuperUser, IsPegawaiOrReadOnly, IsSuperUserOrReadOnly, IsSuperUserOrOwnProfile
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.exceptions import PermissionDenied
 from django.contrib.auth import get_user_model
@@ -24,7 +24,12 @@ User = get_user_model()
 class PegawaiListCreateView(generics.ListCreateAPIView):
     queryset = Pegawai.objects.all()
     serializer_class = PegawaiSerializer
-    permission_classes = [IsAuthenticated, IsSuperUser]
+    permission_classes = [IsAuthenticated, IsSuperUserOrReadOnly]
+
+    def get_serializer_class(self):
+        if self.request.method == 'GET':
+            return PegawaiSerializer # Gunakan serializer yang lebih efisien untuk list
+        return PegawaiSerializer
 
     def perform_create(self, serializer):
         instance = serializer.save()
@@ -44,7 +49,7 @@ class PegawaiRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
 
 class PegawaiProfileRetrieveUpdateView(generics.RetrieveUpdateAPIView):
     serializer_class = PegawaiSerializer
-    permission_classes = [IsAuthenticated, IsPegawaiOrReadOnly]
+    permission_classes = [IsAuthenticated, IsSuperUserOrOwnProfile]
 
     def get_queryset(self):
         user = self.request.user
