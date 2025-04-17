@@ -83,7 +83,7 @@ class Command(BaseCommand):
                         email_pegawai = pegawai_record.get('email')
                         if not is_valid_email(email_pegawai):
                             nama_depan = pegawai_record.get('namaPegawai', '').split(' ')[0].lower()
-                            email_domain = "jwt.id"
+                            email_domain = "email.com"
                             email_pegawai = f"{nama_depan}@{email_domain}"
                             pegawai_record['email'] = email_pegawai
 
@@ -95,7 +95,7 @@ class Command(BaseCommand):
 
                             # Buat user pegawai jika belum ada
                             nama_depan = pegawai_record.get('namaPegawai', '').split(' ')[0].lower()
-                            email_domain = "jwt.id"
+                            email_domain = "email.com"
                             username = f"{nama_depan}@{email_domain}"
 
                             if email_pegawai and not User.objects.filter(email=email_pegawai).exists():
