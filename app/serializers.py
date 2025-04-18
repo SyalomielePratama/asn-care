@@ -15,7 +15,7 @@ class PegawaiSerializer(serializers.ModelSerializer):
     class Meta:
         model = Pegawai
         fields = '__all__'
-        read_only_fields = ('id_pegawai','umur', 'waktu_kenaikan_pangkat', 'waktu_kenaikan_gaji', 'namaPegawai')
+        read_only_fields = ('id_pegawai','umur', 'waktu_kenaikan_pangkat', 'waktu_kenaikan_gaji')
 
     def get_waktu_kenaikan_pangkat(self, obj):
         tahun, bulan = obj.waktu_kenaikan_pangkat()
